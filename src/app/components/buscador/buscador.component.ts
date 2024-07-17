@@ -41,7 +41,6 @@ export class BuscadorComponent implements OnInit {
         this.recent = this.originalData;
       }
       this.results = this.originalData;
-      console.log(this.results);
       this.displayedResults = this.results.slice(0, this.itemsPerPage);
       this.isLoading = false;
     }, () => {
@@ -79,7 +78,6 @@ export class BuscadorComponent implements OnInit {
     this.isLoading = true;
     this.nasaService.search(this.searchTerm, mediaTypes).subscribe((response: NasaApiResponse) => {
       this.updateResults(response.collection.items);
-      console.log(this.results);
       this.isLoading = false;
     }, () => {
       this.isLoading = false;
