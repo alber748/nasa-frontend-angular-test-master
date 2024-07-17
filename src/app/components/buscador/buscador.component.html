@@ -1,0 +1,54 @@
+<section class="mt-5 mx-5 lg:mx-auto max-w-7xl">
+  <div class="shadow-uniform rounded-xl w-full px-5 py-5">
+    <form (ngSubmit)="onSearch()" class="flex flex-wrap gap-2 lg:justify-between justify-center items-center w-full">
+      <!-- Input de búsqueda y botón -->
+      <div class="flex w-full lg:w-3/6">
+        <input type="text" [(ngModel)]="searchTerm" name="searchTerm" class="w-full p-2 border-2 border-gray-300 rounded-l-md" placeholder="Search" />
+        <button type="submit" [ngClass]="searchTerm ? 'bg-blue-500' : 'bg-blue-300'" class=" text-white p-2 rounded-r-md" [disabled]="!searchTerm">Search</button>
+      </div>
+      
+      <div class="flex w-full lg:w-1/5 items-center justify-center gap-2">
+        <div class="flex items-center gap-1">
+          <label for="images" class="text-gray-600">Images</label>
+          <input name="images" type="checkbox" [(ngModel)]="filterImages"/>
+        </div>
+        <div class="flex items-center gap-1">
+          <label for="videos" class="text-gray-600">Videos</label>
+          <input name="videos" type="checkbox" [(ngModel)]="filterVideos"/>
+        </div>
+        <div class="flex items-center gap-1">
+          <label for="audios" class="text-gray-600">Audios</label>
+          <input name="audios" type="checkbox" [(ngModel)]="filterAudios"/>
+        </div>
+      </div>
+      
+      <div class="flex w-full lg:w-1/6">
+        <select [disabled]="searchTerm.length > 0 " [ngClass]="searchTerm.length > 0 ? 'bg-gray-200' : 'bg-white'" name="tipo" id="tipo" [(ngModel)]="searchType" (change)="onSearchByType()" class="w-full p-2 border-2 border-gray-300 rounded-md">
+          <option value="latest">Newest Uploads</option>
+          <option value="popular">Popular</option>
+        </select>
+      </div>
+    </form>
+  </div>
+
+  <div class="loading-spinner" *ngIf="isLoading">
+    <div class="spinner"></div>
+  </div> 
+
+  <!-- Resultados de la búsqueda -->
+  <div *ngIf="!isLoading && displayedResults.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+    <div *ngFor="let result of displayedResults" class="bg-white rounded shadow p-4">
+      <ng-container *ngIf="result.links && result.links.length > 0">
+        <img [src]="result.data[0].media_type !== 'audio' ? result.links[0].href : result[0].href" alt="{{ result.data[0].title }}" class="w-full h-48 object-cover rounded mb-4">
+      </ng-container>
+      <h3 class="text-lg font-bold">{{ result.data[0].title }}</h3>
+      <p class="text-gray-600">{{ result.data[0].description | slice:0:50 }}...</p>
+      <a [routerLink]="['/detail', result.data[0].nasa_id, result.data[0].media_type]" (click)="setDataToLocal( result.data[0].media_type, result.data[0].media_type !== 'audio' ? result.links[0].href : result.data[0].nasa_id )" class="text-blue-500 hover:underline">Ver más</a>
+    </div>
+  </div>
+
+  <!-- Botón para cargar más resultados -->
+  <div *ngIf="!isLoading && displayedResults.length < results.length" class="flex justify-center mt-4 mb-10">
+    <button (click)="loadMore()" class="bg-blue-500 text-white p-2 rounded">Ver más</button>
+  </div>
+</section>
